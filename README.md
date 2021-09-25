@@ -1,49 +1,36 @@
-A utility to fetch or build patched Node binaries used by [pkg](https://github.com/vercel/pkg) to generate executables. This repo hosts prebuilt binaries in [Releases](https://github.com/vercel/pkg-fetch/releases).
+# pkg-fetch
 
-## Binary Compatibility
+## Changes
 
-| Node                                                          | Platform    | Architectures               | Minimum OS version                                                                |
-| ------------------------------------------------------------- | ----------- | --------------------------- | --------------------------------------------------------------------------------- |
-| 8<sup>[[1]](#fn1)</sup>, 10<sup>[[1]](#fn1)</sup>, 12, 14, 16 | alpine      | x64, arm64                  | 3.7.3, other distros with musl libc >= 1.1.18                                     |
-| 8<sup>[[1]](#fn1)</sup>, 10<sup>[[1]](#fn1)</sup>, 12, 14, 16 | linux       | x64                         | Enterprise Linux 7, Ubuntu 14.04, Debian jessie, other distros with glibc >= 2.17 |
-| 8<sup>[[1]](#fn1)</sup>, 10<sup>[[1]](#fn1)</sup>, 12, 14, 16 | linux       | arm64                       | Enterprise Linux 8, Ubuntu 18.04, Debian buster, other distros with glibc >= 2.27 |
-| 8<sup>[[1]](#fn1)</sup>, 10<sup>[[1]](#fn1)</sup>, 12, 14, 16 | linuxstatic | x64, arm64                  | Any distro with Linux Kernel >= 2.6.32 (>= 3.10 strongly recommended)             |
-| 10<sup>[[1]](#fn1)</sup>, 12, 14, 16                          | linuxstatic | armv7<sup>[[2]](#fn2)</sup> | Any distro with Linux Kernel >= 2.6.32 (>= 3.10 strongly recommended)             |
-| 8<sup>[[1]](#fn1)</sup>, 10<sup>[[1]](#fn1)</sup>, 12, 14, 16 | macos       | x64                         | 10.13                                                                             |
-| 14, 16                                                        | macos       | arm64<sup>[[3]](#fn3)</sup> | 11.0                                                                              |
-| 8<sup>[[1]](#fn1)</sup>, 10<sup>[[1]](#fn1)</sup>, 12, 14, 16 | win         | x64                         | 8.1                                                                               |
-| 14, 16                                                        | win         | arm64                       | 10                                                                                |
+This fork contains [Valetudo](https://github.com/Hypfer/Valetudo)-specific changes to the upstream `pkg-fetch`
 
-<em id="fn1">[1]</em>: end-of-life, may be removed in the next major release.
+### No ICU
 
-<em id="fn2">[2]</em>: best-effort basis, not semver-protected.
+Since space is limited in embedded devices, this fork is built with `'--without-intl'`
 
-<em id="fn3">[3]</em>: [mandatory code signing](https://developer.apple.com/documentation/macos-release-notes/macos-big-sur-11_0_1-universal-apps-release-notes) is enforced by Apple.
+### Relative Payload Offsets
 
-## Security
+To be able to utilize UPX compression, this fork uses offsets relative to the EOF to read prelude and payload.
 
-We do not expect this project to have vulnerabilities of its own. Nonetheless, as this project distributes prebuilt Node.js binaries,
+Be advised that this might break if you sign your binary or append anything else apart from prelude and payload to the
+binary. Maybe there will be a better solution in the future. For now this shall suffice.
 
-**Node.js security vulnerabilities affect binaries distributed by this project, as well.**
+### Static-linking only
 
-Like most of you, this project does not have access to advance/private disclosures of Node.js security vulnerabilities. We can only closely monitor the **public** security advisories from the Node.js team. It takes time to build and release a new set of binaries, once a new Node.js version has been released.
+Since the whole point of using `pkg` is to have a binary that runs everywhere, we're doing static linking only.
 
-We aim to complete the full cycle within a day, when there is a security update. Please [open an issue](https://github.com/vercel/pkg-fetch/issues/new) if there is no action for a while.
+### Linux-only
 
-**It is possible for this project to fall victim to a supply chain attack.**
+Unless some Windows armv7 embedded machine magically appears somewhere, this will be linux-only.
 
-This project deploys multiple defense measures to ensure that the safe binaries are delivered to users:
+### Skip bundled payload
 
-- Binaries are compiled by [Github Actions](https://github.com/vercel/pkg-fetch/actions)
-  - Workflows and build logs are transparent and auditable.
-  - Artifacts are the source of truth. Even repository/organization administrators can't tamper them.
-- Hashes of binaries are hardcoded in [source](https://github.com/vercel/pkg-fetch/blob/HEAD/lib/expected.ts)
-  - Origins of the binaries are documented.
-  - Changes to the binaries are logged by VCS (Git) and are publicly visible.
-  - `pkg-fetch` rejects the binary if it does not match the hardcoded hash.
-- GPG-signed hashes are available in [Releases](https://github.com/vercel/pkg-fetch/releases)
-  - Easy to spot a compromise.
-- `pkg-fetch` package on npm is strictly permission-controlled
-  - Only authorized Vercel employees can push new revisions to npm.
+This actually isn't a feature of this fork but just mainline pkg.
 
-Report to [security@vercel.com](mailto:security@vercel.com), if you noticed a disparity between (hashes of) binaries.
+By setting the `PKG_EXECPATH` environment variable to `PKG_INVOKE_NODEJS`, the payload gets ignored and you'll end up
+with the nodejs runtime which can then be used for other purposes
+
+## How to Use
+
+Fortunately, you can vendor your own pkg nodejs base binaries by using the `PKG_CACHE_PATH` environment variable to point
+to a directory that is part of your codebase. e.g. `cross-env PKG_CACHE_PATH=./build_dependencies/pkg pkg --targets node16-linuxstatic-arm64 .`

@@ -54,8 +54,9 @@ function getConfigureArgs(major: number, targetPlatform: string): string[] {
   // bundled npm package manager
   args.push('--without-npm');
 
-  // Small ICU
-  args.push('--with-intl=small-icu');
+  // No ICU
+  args.push('--without-intl');
+
 
   // Workaround for nodejs/node#39313
   // All supported macOS versions have zlib as a system library
