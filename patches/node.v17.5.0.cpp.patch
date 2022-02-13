@@ -14,20 +14,20 @@
 @@ -88,6 +88,10 @@ class V8_EXPORT V8 {
    static void SetFlagsFromCommandLine(int* argc, char** argv,
                                        bool remove_flags);
- 
+
 +  static void EnableCompilationForSourcelessUse();
 +  static void DisableCompilationForSourcelessUse();
 +  static void FixSourcelessScript(Isolate* v8_isolate, Local<UnboundScript> script);
 +
    /** Get the version string. */
    static const char* GetVersion();
- 
+
 --- node/deps/v8/src/api/api.cc
 +++ node/deps/v8/src/api/api.cc
 @@ -730,6 +730,29 @@ void V8::SetFlagsFromCommandLine(int* argc, char** argv, bool remove_flags) {
                                         HelpOptions(HelpOptions::kDontExit));
  }
- 
+
 +bool save_lazy;
 +bool save_predictable;
 +
@@ -52,7 +52,7 @@
 +}
 +
  RegisteredExtension* RegisteredExtension::first_extension_ = nullptr;
- 
+
  RegisteredExtension::RegisteredExtension(std::unique_ptr<Extension> extension)
 --- node/deps/v8/src/codegen/compiler.cc
 +++ node/deps/v8/src/codegen/compiler.cc
@@ -82,7 +82,7 @@
 @@ -639,6 +639,14 @@ bool SharedFunctionInfo::ShouldFlushCode(
    }
    if (!data.IsBytecodeArray()) return false;
- 
+
 +  Object script_obj = script();
 +  if (!script_obj.IsUndefined()) {
 +    Script script = Script::cast(script_obj);
@@ -92,7 +92,7 @@
 +  }
 +
    if (IsStressFlushingEnabled(code_flush_mode)) return true;
- 
+
    BytecodeArray bytecode = BytecodeArray::cast(data);
 --- node/deps/v8/src/parsing/parsing.cc
 +++ node/deps/v8/src/parsing/parsing.cc
@@ -101,11 +101,11 @@
    DCHECK(info->flags().is_toplevel());
    DCHECK_NULL(info->literal());
 +  if (String::cast(script->source()).IsUndefined(isolate)) return false;
- 
+
    VMState<PARSER> state(isolate);
- 
+
 @@ -76,6 +77,7 @@ bool ParseFunction(ParseInfo* info, Handle<SharedFunctionInfo> shared_info,
- 
+
    // Create a character stream for the parser.
    Handle<Script> script(Script::cast(shared_info->script()), isolate);
 +  if (String::cast(script->source()).IsUndefined(isolate)) return false;
@@ -122,22 +122,22 @@
 -  if (source_hash != expected_source_hash) return SOURCE_MISMATCH;
    return CHECK_SUCCESS;
  }
- 
+
 --- node/lib/child_process.js
 +++ node/lib/child_process.js
 @@ -164,7 +164,7 @@ function fork(modulePath /* , args, options */) {
    options.execPath = options.execPath || process.execPath;
    options.shell = false;
- 
+
 -  return spawn(options.execPath, args, options);
 +  return module.exports.spawn(options.execPath, args, options);
  }
- 
+
  function _forkChild(fd, serializationMode) {
 index 0000000000..fb2d47f52b
 --- /dev/null
 +++ node/lib/internal/bootstrap/pkg.js
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,45 @@
 +'use strict';
 +
 +const {
@@ -155,13 +155,14 @@ index 0000000000..fb2d47f52b
 +    var PAYLOAD_SIZE = '// PAYLOAD_SIZE //' | 0;
 +    var PRELUDE_POSITION = '// PRELUDE_POSITION //' | 0;
 +    var PRELUDE_SIZE = '// PRELUDE_SIZE //' | 0;
-+    if (!PRELUDE_POSITION) {
++    if (!PRELUDE_SIZE) {
 +      // no prelude - remove entrypoint from argv[1]
 +      process.argv.splice(1, 1);
 +      return { undoPatch: true };
 +    }
++    var filesize = fs.fstatSync(fd).size;
 +    var prelude = Buffer.alloc(PRELUDE_SIZE);
-+    var read = fs.readSync(fd, prelude, 0, PRELUDE_SIZE, PRELUDE_POSITION);
++    var read = fs.readSync(fd, prelude, 0, PRELUDE_SIZE, filesize - PRELUDE_SIZE);
 +    if (read !== PRELUDE_SIZE) {
 +      console.error('Pkg: Error reading from file.');
 +      process.exit(1);
@@ -169,7 +170,7 @@ index 0000000000..fb2d47f52b
 +    var s = new vm.Script(prelude, { filename: 'pkg/prelude/bootstrap.js' });
 +    var fn = s.runInThisContext();
 +    return fn(process, __require__,
-+      console, fd, PAYLOAD_POSITION, PAYLOAD_SIZE);
++      console, fd, filesize - PRELUDE_SIZE - PAYLOAD_SIZE, PAYLOAD_SIZE);
 +  }
 +  (function () {
 +    var fd = fs.openSync(process.execPath, 'r');
@@ -187,7 +188,7 @@ index 0000000000..fb2d47f52b
 @@ -19,7 +19,12 @@ const { Buffer } = require('buffer');
  const { ERR_MANIFEST_ASSERT_INTEGRITY } = require('internal/errors').codes;
  const assert = require('internal/assert');
- 
+
 +let _alreadyPrepared = false;
 +
  function prepareMainThreadExecution(expandArgv1 = false) {
@@ -199,7 +200,7 @@ index 0000000000..fb2d47f52b
    reconnectZeroFillToggle();
 @@ -92,7 +97,8 @@ function patchProcessObject(expandArgv1) {
    process.argv[0] = process.execPath;
- 
+
    if (expandArgv1 && process.argv[1] &&
 -      !StringPrototypeStartsWith(process.argv[1], '-')) {
 +      !StringPrototypeStartsWith(process.argv[1], '-') &&
@@ -222,13 +223,13 @@ index 0000000000..fb2d47f52b
 +++ node/lib/internal/modules/package_json_reader.js
 @@ -1,7 +1,7 @@
  'use strict';
- 
+
  const { SafeMap } = primordials;
 -const { internalModuleReadJSON } = internalBinding('fs');
 +const internalModuleReadJSON = function (f) { return require('fs').internalModuleReadJSON(f); };
  const { pathToFileURL } = require('url');
  const { toNamespacedPath } = require('path');
- 
+
 --- node/lib/vm.js
 +++ node/lib/vm.js
 @@ -79,6 +79,7 @@ class Script extends ContextifyScript {
@@ -237,7 +238,7 @@ index 0000000000..fb2d47f52b
        [kParsingContext]: parsingContext,
 +      sourceless = false,
      } = options;
- 
+
      validateString(filename, 'options.filename');
 @@ -103,7 +104,8 @@ class Script extends ContextifyScript {
              columnOffset,
@@ -257,7 +258,7 @@ index 0000000000..fb2d47f52b
      start_io_thread_async.data = this;
 -    // Ignore failure, SIGUSR1 won't work, but that should not block node start.
 -    StartDebugSignalHandler();
- 
+
      parent_env_->AddCleanupHook([](void* data) {
        Environment* env = static_cast<Environment*>(data);
 --- node/src/node.cc
@@ -265,14 +266,14 @@ index 0000000000..fb2d47f52b
 @@ -473,6 +473,8 @@ MaybeLocal<Value> StartExecution(Environment* env, StartExecutionCallback cb) {
      return scope.EscapeMaybe(cb(info));
    }
- 
+
 +  StartExecution(env, "internal/bootstrap/pkg");
 +
    if (env->worker_context() != nullptr) {
      return StartExecution(env, "internal/main/worker_thread");
    }
 @@ -583,13 +585,6 @@ static struct {
- 
+
  inline void PlatformInit() {
  #ifdef __POSIX__
 -#if HAVE_INSPECTOR
@@ -288,7 +289,7 @@ index 0000000000..fb2d47f52b
 @@ -605,10 +600,6 @@ inline void PlatformInit() {
        ABORT();
    }
- 
+
 -#if HAVE_INSPECTOR
 -  CHECK_EQ(err, 0);
 -#endif  // HAVE_INSPECTOR
@@ -311,7 +312,7 @@ index 0000000000..fb2d47f52b
    bool produce_cached_data = false;
    Local<Context> parsing_context = context;
 +  bool sourceless = false;
- 
+
    if (argc > 2) {
      // new ContextifyScript(code, filename, lineOffset, columnOffset,
      //                      cachedData, produceCachedData, parsingContext)
@@ -326,12 +327,12 @@ index 0000000000..fb2d47f52b
      }
 +    sourceless = args[7]->IsTrue();
    }
- 
+
    ContextifyScript* contextify_script =
 @@ -784,6 +787,10 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
    ShouldNotAbortOnUncaughtScope no_abort_scope(env);
    Context::Scope scope(parsing_context);
- 
+
 +  if (sourceless && produce_cached_data) {
 +    V8::EnableCompilationForSourcelessUse();
 +  }
@@ -351,7 +352,7 @@ index 0000000000..fb2d47f52b
 +  }
 +
    contextify_script->script_.Reset(isolate, v8_script.ToLocalChecked());
- 
+
    Local<Context> env_context = env->context();
 @@ -826,6 +840,11 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
          env->cached_data_produced_string(),
@@ -370,7 +371,7 @@ index 0000000000..fb2d47f52b
 @@ -22,6 +22,8 @@
  #include "node.h"
  #include <cstdio>
- 
+
 +int reorder(int argc, char** argv);
 +
  #ifdef _WIN32
@@ -478,7 +479,7 @@ index 0000000000..fb2d47f52b
 +++ node/src/node_options.cc
 @@ -256,6 +256,7 @@ void Parse(
  // TODO(addaleax): Make that unnecessary.
- 
+
  DebugOptionsParser::DebugOptionsParser() {
 +  return;
    AddOption("--inspect-port",
