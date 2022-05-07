@@ -31,11 +31,13 @@ function getConfigureArgs(major: number, targetPlatform: string): string[] {
   // against packaged apps, hence v8_inspector is useless
   args.push('--without-inspector');
 
+  /*
   if (hostPlatform === 'alpine') {
     // Statically Link against libgcc and libstdc++ libraries. See vercel/pkg#555.
     // libgcc and libstdc++ grant GCC Runtime Library Exception of GPL
     args.push('--partly-static');
   }
+   */
 
   if (targetPlatform === 'linuxstatic') {
     args.push('--fully-static');
@@ -53,6 +55,7 @@ function getConfigureArgs(major: number, targetPlatform: string): string[] {
 
   // DTrace
   args.push('--without-dtrace');
+  args.push('--without-etw');
 
   // bundled npm package manager
   args.push('--without-npm');
@@ -61,11 +64,17 @@ function getConfigureArgs(major: number, targetPlatform: string): string[] {
   args.push('--without-intl');
 
 
+  args.push('--without-corepack');
+
+
   // Workaround for nodejs/node#39313
   // All supported macOS versions have zlib as a system library
   if (targetPlatform === 'macos') {
     args.push('--shared-zlib');
   }
+
+  args.push('--tag');
+  args.push('Valetudo');
 
   return args;
 }
@@ -189,10 +198,13 @@ async function compileOnUnix(
     args.push('--dest-cpu', cpu);
   }
 
+  const { CFLAGS = '', CXXFLAGS = '' } = process.env;
+  process.env.CFLAGS = `${CFLAGS} -Os`;
+  process.env.CXXFLAGS = `${CXXFLAGS} -Os`;
+
   if (targetArch === 'armv7') {
-    const { CFLAGS = '', CXXFLAGS = '' } = process.env;
-    process.env.CFLAGS = `${CFLAGS} -marm -mcpu=cortex-a7`;
-    process.env.CXXFLAGS = `${CXXFLAGS} -marm -mcpu=cortex-a7`;
+    process.env.CFLAGS = `${process.env.CFLAGS} -marm -mcpu=cortex-a7`;
+    process.env.CXXFLAGS = `${process.env.CXXFLAGS} -marm -mcpu=cortex-a7`;
 
     args.push('--with-arm-float-abi=hard');
     args.push('--with-arm-fpu=vfpv3');

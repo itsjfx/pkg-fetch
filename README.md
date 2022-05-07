@@ -8,12 +8,9 @@ This fork contains [Valetudo](https://github.com/Hypfer/Valetudo)-specific chang
 
 Since space is limited in embedded devices, this fork is built with `'--without-intl'`
 
-### Relative Payload Offsets
+### UPX Support
 
-To be able to utilize UPX compression, this fork uses offsets relative to the EOF to read prelude and payload.
-
-Be advised that this might break if you sign your binary or append anything else apart from prelude and payload to the
-binary. Maybe there will be a better solution in the future. For now this shall suffice.
+UPX is supported
 
 ### Static-linking only
 
@@ -22,6 +19,10 @@ Since the whole point of using `pkg` is to have a binary that runs everywhere, w
 ### Linux-only
 
 Unless some Windows armv7 embedded machine magically appears somewhere, this will be linux-only.
+
+### Optimized for size
+
+`-Os`
 
 ### Skip bundled payload
 
@@ -34,3 +35,25 @@ with the nodejs runtime which can then be used for other purposes
 
 Fortunately, you can vendor your own pkg nodejs base binaries by using the `PKG_CACHE_PATH` environment variable to point
 to a directory that is part of your codebase. e.g. `cross-env PKG_CACHE_PATH=./build_dependencies/pkg pkg --targets node16-linuxstatic-arm64 .`
+
+## How to build
+
+Building the docker images will also build the nodejs binary.
+You might want to disable docker buildkit so that you get the full compiler output.
+On Windows, this can be done with `$env:DOCKER_BUILDKIT=0`. On linux, you'll know how to set an env variable.
+
+### Build the runtime
+
+armv7
+`docker build --progress plain -t valetudo-pkg-fetch-armv7 --build-arg HOST_ARCH=i686 --build-arg TARGET_TRIPLE=armv7l-linux-musleabihf --build-arg PKG_FETCH_OPTION_a=armv7 --build-arg PKG_FETCH_OPTION_n=node18 --build-arg PKG_FETCH_OPTION_p=linuxstatic -f .\Dockerfile.alpine .`
+
+aarch64
+`docker build --progress plain -t valetudo-pkg-fetch-aarch64 --build-arg HOST_ARCH=x86_64 --build-arg TARGET_TRIPLE=aarch64-linux-musl --build-arg PKG_FETCH_OPTION_a=arm64 --build-arg PKG_FETCH_OPTION_n=node18 --build-arg PKG_FETCH_OPTION_p=linuxstatic -f .\Dockerfile.alpine .`
+
+### Create a container based on that image
+
+`docker create valetudo-pkg-fetch-armv7:latest`
+
+### Pull the files
+
+`docker cp id_from_previous_command:/root/pkg-fetch/dist/ .`

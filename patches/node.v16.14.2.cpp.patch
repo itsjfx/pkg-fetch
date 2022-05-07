@@ -1,6 +1,6 @@
 --- node/common.gypi
 +++ node/common.gypi
-@@ -171,7 +171,7 @@
+@@ -171,13 +171,13 @@
                'MSVC_runtimeType': 2   # MultiThreadedDLL (/MD)
              }],
              ['llvm_version=="0.0"', {
@@ -9,6 +9,315 @@
              }, {
                'lto': ' -flto ', # Clang
              }],
+           ],
+         },
+-        'cflags': [ '-O3' ],
++        'cflags': [ '-Os' ],
+         'conditions': [
+           ['enable_lto=="true"', {
+             'cflags': ['<(lto)'],
+--- node/deps/llhttp/common.gypi
++++ node/deps/llhttp/common.gypi
+@@ -15,7 +15,7 @@
+       },
+       'Release': {
+         'defines': [ 'NDEBUG' ],
+-        'cflags': [ '-Wall', '-Wextra', '-O3' ],
++        'cflags': [ '-Wall', '-Wextra', '-Os' ],
+         'msvs_settings': {
+           'VCCLCompilerTool': {
+             'RuntimeLibrary': 0, # static release
+--- node/deps/uv/common.gypi
++++ node/deps/uv/common.gypi
+@@ -46,7 +46,7 @@
+       'Release': {
+         'defines': [ 'NDEBUG' ],
+         'cflags': [
+-          '-O3',
++          '-Os',
+         ],
+         'msvs_settings': {
+           'VCCLCompilerTool': {
+--- a/tools/v8_gypfiles/toolchain.gypi
++++ b/tools/v8_gypfiles/toolchain.gypi
+@@ -1265,10 +1265,10 @@
+                   # Don't use -O3 with sanitizers.
+                   ['asan==0 and msan==0 and lsan==0 \
+                 and tsan==0 and ubsan==0 and ubsan_vptr==0', {
+-                    'cflags': ['-O3'],
++                    'cflags': ['-Os -finline-functions'],
+                     'cflags!': ['-O2'],
+                   }, {
+-                     'cflags': ['-O2'],
++                     'cflags': ['-Os -finline-functions'],
+                      'cflags!': ['-O3'],
+                    }],
+                 ],
+@@ -1313,10 +1313,10 @@
+               # Don't use -O3 with sanitizers.
+               ['asan==0 and msan==0 and lsan==0 \
+                 and tsan==0 and ubsan==0 and ubsan_vptr==0', {
+-                'cflags': ['-O3'],
++                'cflags': ['-Os -finline-functions'],
+                 'cflags!': ['-O2'],
+               }, {
+-                'cflags': ['-O2'],
++                'cflags': ['-Os -finline-functions'],
+                 'cflags!': ['-O3'],
+               }],
+             ],
+--- node/deps/openssl/config/archs/linux-aarch64/asm/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-aarch64/asm/openssl-cl.gypi
+@@ -16,9 +16,9 @@
+     ],
+     'openssl_cflags_linux-aarch64': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-aarch64': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
++++ node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
+@@ -713,9 +713,9 @@
+     ],
+     'openssl_cflags_linux-aarch64': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-aarch64': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl-cl.gypi
+@@ -16,9 +16,9 @@
+     ],
+     'openssl_cflags_linux-aarch64': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-aarch64': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
++++ node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
+@@ -713,9 +713,9 @@
+     ],
+     'openssl_cflags_linux-aarch64': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-aarch64': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl-cl.gypi
+@@ -6,9 +6,9 @@
+       'OPENSSL_PIC',
+     ],
+     'openssl_cflags_linux-aarch64': [
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-aarch64': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
++++ node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
+@@ -692,9 +692,9 @@
+       'OPENSSL_PIC',
+     ],
+     'openssl_cflags_linux-aarch64': [
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-aarch64': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-armv4/asm/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-armv4/asm/openssl-cl.gypi
+@@ -19,9 +19,9 @@
+     ],
+     'openssl_cflags_linux-armv4': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-armv4': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
++++ node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
+@@ -718,9 +718,9 @@
+     ],
+     'openssl_cflags_linux-armv4': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-armv4': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl-cl.gypi
+@@ -19,9 +19,9 @@
+     ],
+     'openssl_cflags_linux-armv4': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-armv4': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
++++ node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
+@@ -718,9 +718,9 @@
+     ],
+     'openssl_cflags_linux-armv4': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-armv4': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-armv4/no-asm/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-armv4/no-asm/openssl-cl.gypi
+@@ -6,9 +6,9 @@
+       'OPENSSL_PIC',
+     ],
+     'openssl_cflags_linux-armv4': [
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-armv4': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
++++ node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
+@@ -692,9 +692,9 @@
+       'OPENSSL_PIC',
+     ],
+     'openssl_cflags_linux-armv4': [
+-      '-Wall -O3',
++      '-Wall -Os',
+       '-pthread',
+-      '-Wall -O3',
++      '-Wall -Os',
+     ],
+     'openssl_ex_libs_linux-armv4': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
+@@ -25,9 +25,9 @@
+     ],
+     'openssl_cflags_linux-elf': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+       '-pthread',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+     ],
+     'openssl_ex_libs_linux-elf': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
++++ node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
+@@ -724,9 +724,9 @@
+     ],
+     'openssl_cflags_linux-elf': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+       '-pthread',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+     ],
+     'openssl_ex_libs_linux-elf': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
+@@ -25,9 +25,9 @@
+     ],
+     'openssl_cflags_linux-elf': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+       '-pthread',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+     ],
+     'openssl_ex_libs_linux-elf': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
++++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
+@@ -724,9 +724,9 @@
+     ],
+     'openssl_cflags_linux-elf': [
+       '-Wa,--noexecstack',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+       '-pthread',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+     ],
+     'openssl_ex_libs_linux-elf': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-elf/no-asm/openssl-cl.gypi
++++ node/deps/openssl/config/archs/linux-elf/no-asm/openssl-cl.gypi
+@@ -7,9 +7,9 @@
+       'OPENSSL_PIC',
+     ],
+     'openssl_cflags_linux-elf': [
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+       '-pthread',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+     ],
+     'openssl_ex_libs_linux-elf': [
+       '-ldl -pthread',
+--- node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
++++ node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
+@@ -693,9 +693,9 @@
+       'OPENSSL_PIC',
+     ],
+     'openssl_cflags_linux-elf': [
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+       '-pthread',
+-      '-Wall -O3 -fomit-frame-pointer',
++      '-Wall -Os -fomit-frame-pointer',
+     ],
+     'openssl_ex_libs_linux-elf': [
+       '-ldl -pthread',
 --- node/deps/v8/include/v8.h
 +++ node/deps/v8/include/v8.h
 @@ -10053,6 +10053,10 @@ class V8_EXPORT V8 {

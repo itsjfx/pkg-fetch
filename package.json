@@ -1,6 +1,6 @@
 {
   "name": "pkg-fetch",
-  "version": "3.2.3-valetudo",
+  "version": "3.4.0-valetudo",
   "description": "Compiles and stores base binaries for pkg",
   "main": "lib-es5/index.js",
   "license": "MIT",
