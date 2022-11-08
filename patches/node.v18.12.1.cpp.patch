@@ -43,7 +43,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
-@@ -998,9 +998,9 @@
+@@ -999,9 +999,9 @@
      ],
      'openssl_cflags_linux-aarch64': [
        '-Wa,--noexecstack',
@@ -71,7 +71,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
-@@ -998,9 +998,9 @@
+@@ -999,9 +999,9 @@
      ],
      'openssl_cflags_linux-aarch64': [
        '-Wa,--noexecstack',
@@ -99,7 +99,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
-@@ -975,9 +975,9 @@
+@@ -976,9 +976,9 @@
        'OPENSSL_PIC',
      ],
      'openssl_cflags_linux-aarch64': [
@@ -127,7 +127,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
-@@ -1003,9 +1003,9 @@
+@@ -1004,9 +1004,9 @@
      ],
      'openssl_cflags_linux-armv4': [
        '-Wa,--noexecstack',
@@ -155,7 +155,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
-@@ -1003,9 +1003,9 @@
+@@ -1004,9 +1004,9 @@
      ],
      'openssl_cflags_linux-armv4': [
        '-Wa,--noexecstack',
@@ -183,7 +183,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
-@@ -975,9 +975,9 @@
+@@ -976,9 +976,9 @@
        'OPENSSL_PIC',
      ],
      'openssl_cflags_linux-armv4': [
@@ -211,7 +211,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
-@@ -1012,9 +1012,9 @@
+@@ -1013,9 +1013,9 @@
      ],
      'openssl_cflags_linux-elf': [
        '-Wa,--noexecstack',
@@ -239,7 +239,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
-@@ -1012,9 +1012,9 @@
+@@ -1013,9 +1013,9 @@
      ],
      'openssl_cflags_linux-elf': [
        '-Wa,--noexecstack',
@@ -267,7 +267,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
-@@ -976,9 +976,9 @@
+@@ -977,9 +977,9 @@
        'OPENSSL_PIC',
      ],
      'openssl_cflags_linux-elf': [
@@ -305,7 +305,7 @@
  
 --- node/deps/v8/src/api/api.cc
 +++ node/deps/v8/src/api/api.cc
-@@ -706,6 +706,29 @@ void V8::SetFlagsFromCommandLine(int* argc, char** argv, bool remove_flags) {
+@@ -709,6 +709,29 @@ void V8::SetFlagsFromCommandLine(int* argc, char** argv, bool remove_flags) {
                                         HelpOptions(HelpOptions::kDontExit));
  }
  
@@ -421,7 +421,7 @@
    if (payload_length > max_payload_length) {
 --- node/lib/child_process.js
 +++ node/lib/child_process.js
-@@ -160,7 +160,7 @@ function fork(modulePath, args = [], options) {
+@@ -164,7 +164,7 @@ function fork(modulePath, args = [], options) {
      throw new ERR_CHILD_PROCESS_IPC_REQUIRED('options.stdio');
    }
  
@@ -438,7 +438,7 @@ index 00000000000..fb2d47f52b6
 +
 +const {
 +  prepareMainThreadExecution
-+} = require('internal/bootstrap/pre_execution');
++} = require('internal/process/pre_execution');
 +
 +prepareMainThreadExecution(true);
 +
@@ -493,12 +493,12 @@ index 00000000000..fb2d47f52b6
 +    }
 +  }());
 +}());
---- node/lib/internal/bootstrap/pre_execution.js
-+++ node/lib/internal/bootstrap/pre_execution.js
-@@ -29,8 +29,13 @@ const {
- } = require('internal/errors').codes;
- const assert = require('internal/assert');
- 
+--- node/lib/internal/process/pre_execution.js
++++ node/lib/internal/process/pre_execution.js
+@@ -33,8 +33,13 @@ const {
+   isBuildingSnapshot,
+ } = require('v8').startupSnapshot;
+
 +let _alreadyPrepared = false;
 +
  function prepareMainThreadExecution(expandArgv1 = false,
@@ -507,9 +507,9 @@ index 00000000000..fb2d47f52b6
 +  _alreadyPrepared = true;
 +
    refreshRuntimeOptions();
- 
+
    // TODO(joyeecheung): this is also necessary for workers when they deserialize
-@@ -119,7 +124,8 @@ function patchProcessObject(expandArgv1) {
+@@ -128,7 +133,8 @@ function patchProcessObject(expandArgv1) {
    process.argv[0] = process.execPath;
  
    if (expandArgv1 && process.argv[1] &&
@@ -519,7 +519,7 @@ index 00000000000..fb2d47f52b6
      // Expand process.argv[1] into a full path.
      const path = require('path');
      try {
-@@ -574,6 +580,7 @@ function loadPreloadModules() {
+@@ -589,6 +595,7 @@ function loadPreloadModules() {
    // For user code, we preload modules if `-r` is passed
    const preloadModules = getOptionValue('--require');
    if (preloadModules && preloadModules.length > 0) {
@@ -529,7 +529,7 @@ index 00000000000..fb2d47f52b6
          _preloadModules
 --- node/lib/internal/modules/cjs/loader.js
 +++ node/lib/internal/modules/cjs/loader.js
-@@ -86,7 +86,7 @@ const fs = require('fs');
+@@ -92,7 +92,7 @@ const fs = require('fs');
  const internalFS = require('internal/fs/utils');
  const path = require('path');
  const { sep } = path;
@@ -571,7 +571,7 @@ index 00000000000..fb2d47f52b6
      }
 --- node/src/inspector_agent.cc
 +++ node/src/inspector_agent.cc
-@@ -690,8 +690,6 @@ bool Agent::Start(const std::string& path,
+@@ -693,8 +693,6 @@ bool Agent::Start(const std::string& path,
                                StartIoThreadAsyncCallback));
      uv_unref(reinterpret_cast<uv_handle_t*>(&start_io_thread_async));
      start_io_thread_async.data = this;
@@ -582,8 +582,8 @@ index 00000000000..fb2d47f52b6
        Environment* env = static_cast<Environment*>(data);
 --- node/src/node.cc
 +++ node/src/node.cc
-@@ -482,6 +482,8 @@ MaybeLocal<Value> StartExecution(Environment* env, StartExecutionCallback cb) {
-     return scope.EscapeMaybe(cb(info));
+@@ -458,6 +458,8 @@ MaybeLocal<Value> StartExecution(Environment* env, StartExecutionCallback cb) {
+     return env->RunSnapshotDeserializeMain();
    }
  
 +  StartExecution(env, "internal/bootstrap/pkg");
@@ -591,31 +591,21 @@ index 00000000000..fb2d47f52b6
    if (env->worker_context() != nullptr) {
      return StartExecution(env, "internal/main/worker_thread");
    }
-@@ -600,13 +602,6 @@ static struct {
- 
- inline void PlatformInit() {
- #ifdef __POSIX__
--#if HAVE_INSPECTOR
--  sigset_t sigmask;
--  sigemptyset(&sigmask);
--  sigaddset(&sigmask, SIGUSR1);
--  const int err = pthread_sigmask(SIG_SETMASK, &sigmask, nullptr);
--#endif  // HAVE_INSPECTOR
--
-   // Make sure file descriptors 0-2 are valid before we start logging anything.
-   for (auto& s : stdio) {
-     const int fd = &s - stdio;
-@@ -622,10 +617,6 @@ inline void PlatformInit() {
-       ABORT();
+@@ -628,14 +630,6 @@ static void PlatformInit(ProcessInitializationFlags::Flags flags) {
    }
  
+   if (!(flags & ProcessInitializationFlags::kNoDefaultSignalHandling)) {
 -#if HAVE_INSPECTOR
--  CHECK_EQ(err, 0);
+-    sigset_t sigmask;
+-    sigemptyset(&sigmask);
+-    sigaddset(&sigmask, SIGUSR1);
+-    const int err = pthread_sigmask(SIG_SETMASK, &sigmask, nullptr);
+-    CHECK_EQ(err, 0);
 -#endif  // HAVE_INSPECTOR
 -
-   // TODO(addaleax): NODE_SHARED_MODE does not really make sense here.
- #ifndef NODE_SHARED_MODE
-   // Restore signal dispositions, the parent process may have changed them.
+     ResetSignalHandlers();
+   }
+ 
 --- node/src/node_contextify.cc
 +++ node/src/node_contextify.cc
 @@ -74,6 +74,7 @@ using v8::ScriptOrModule;
@@ -626,7 +616,7 @@ index 00000000000..fb2d47f52b6
  using v8::Value;
  using v8::WeakCallbackInfo;
  using v8::WeakCallbackType;
-@@ -701,11 +702,12 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -741,11 +742,12 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
    Local<ArrayBufferView> cached_data_buf;
    bool produce_cached_data = false;
    Local<Context> parsing_context = context;
@@ -640,7 +630,7 @@ index 00000000000..fb2d47f52b6
      CHECK(args[2]->IsNumber());
      line_offset = args[2].As<Int32>()->Value();
      CHECK(args[3]->IsNumber());
-@@ -724,6 +726,7 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -764,6 +766,7 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
        CHECK_NOT_NULL(sandbox);
        parsing_context = sandbox->context();
      }
@@ -648,7 +638,7 @@ index 00000000000..fb2d47f52b6
    }
  
    ContextifyScript* contextify_script =
-@@ -775,6 +778,10 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -814,6 +817,10 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
    ShouldNotAbortOnUncaughtScope no_abort_scope(env);
    Context::Scope scope(parsing_context);
  
@@ -659,7 +649,7 @@ index 00000000000..fb2d47f52b6
    MaybeLocal<UnboundScript> v8_script = ScriptCompiler::CompileUnboundScript(
        isolate,
        &source,
-@@ -789,6 +796,13 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -828,6 +835,13 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
                       "ContextifyScript::New");
      return;
    }
@@ -673,7 +663,7 @@ index 00000000000..fb2d47f52b6
    contextify_script->script_.Reset(isolate, v8_script.ToLocalChecked());
  
    Local<Context> env_context = env->context();
-@@ -815,6 +829,11 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -854,6 +868,11 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
          env->cached_data_produced_string(),
          Boolean::New(isolate, cached_data_produced)).Check();
    }
@@ -696,7 +686,7 @@ index 00000000000..fb2d47f52b6
  #ifdef _WIN32
  #include <windows.h>
  #include <VersionHelpers.h>
-@@ -84,7 +86,7 @@ int wmain(int argc, wchar_t* wargv[]) {
+@@ -84,12 +86,95 @@ int wmain(int argc, wchar_t* wargv[]) {
    }
    argv[argc] = nullptr;
    // Now that conversion is done, we can finally start.
@@ -705,10 +695,8 @@ index 00000000000..fb2d47f52b6
  }
  #else
  // UNIX
-@@ -124,6 +126,88 @@ int main(int argc, char* argv[]) {
-   // calls elsewhere in the program (e.g., any logging from V8.)
-   setvbuf(stdout, nullptr, _IONBF, 0);
-   setvbuf(stderr, nullptr, _IONBF, 0);
+ 
+ int main(int argc, char* argv[]) {
 +  return reorder(argc, argv);
 +}
 +#endif
@@ -764,6 +752,7 @@ index 00000000000..fb2d47f52b6
 +#elif defined(__GNUC__)
 +__attribute__((optimize(0)))
  #endif
++
 +int load_baked(char** nargv) {
 +  int c = 1;
 +
@@ -796,7 +785,7 @@ index 00000000000..fb2d47f52b6
 +}
 --- node/src/node_options.cc
 +++ node/src/node_options.cc
-@@ -275,6 +275,7 @@ void Parse(
+@@ -299,6 +299,7 @@ void Parse(
  // TODO(addaleax): Make that unnecessary.
  
  DebugOptionsParser::DebugOptionsParser() {
@@ -843,3 +832,15 @@ index 00000000000..fb2d47f52b6
                  'cflags!': ['-O3'],
                }],
              ],
+--- node/configure.py
++++ node/configure.py
+@@ -1245,9 +1245,6 @@ def configure_node(o):
+
+   o['variables']['want_separate_host_toolset'] = int(cross_compiling)
+
+-  # Enable branch protection for arm64
+-  if target_arch == 'arm64':
+-    o['cflags']+=['-msign-return-address=all']
+
+   if options.node_snapshot_main is not None:
+     if options.shared:
