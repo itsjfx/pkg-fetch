@@ -39,16 +39,14 @@ to a directory that is part of your codebase. e.g. `cross-env PKG_CACHE_PATH=./b
 ## How to build
 
 Building the docker images will also build the nodejs binary.
-You might want to disable docker buildkit so that you get the full compiler output.
-On Windows, this can be done with `$env:DOCKER_BUILDKIT=0`. On linux, you'll know how to set an env variable.
 
 ### Build the runtime
 
 armv7
-`docker build --progress plain -t valetudo-pkg-fetch-armv7 --build-arg HOST_ARCH=i686 --build-arg TARGET_TRIPLE=armv7l-linux-musleabihf --build-arg PKG_FETCH_OPTION_a=armv7 --build-arg PKG_FETCH_OPTION_n=node18 --build-arg PKG_FETCH_OPTION_p=linuxstatic -f .\Dockerfile.alpine .`
+`docker build -t valetudo-pkg-fetch-armv7 --build-arg HOST_ARCH=i686 --build-arg TARGET_TRIPLE=armv7l-linux-musleabihf --build-arg PKG_FETCH_OPTION_a=armv7 --build-arg PKG_FETCH_OPTION_n=node18 --build-arg PKG_FETCH_OPTION_p=linuxstatic -f .\Dockerfile.alpine .`
 
 aarch64
-`docker build --progress plain -t valetudo-pkg-fetch-aarch64 --build-arg HOST_ARCH=x86_64 --build-arg TARGET_TRIPLE=aarch64-linux-musl --build-arg PKG_FETCH_OPTION_a=arm64 --build-arg PKG_FETCH_OPTION_n=node18 --build-arg PKG_FETCH_OPTION_p=linuxstatic -f .\Dockerfile.alpine .`
+`docker build -t valetudo-pkg-fetch-aarch64 --build-arg HOST_ARCH=x86_64 --build-arg TARGET_TRIPLE=aarch64-linux-musl --build-arg PKG_FETCH_OPTION_a=arm64 --build-arg PKG_FETCH_OPTION_n=node18 --build-arg PKG_FETCH_OPTION_p=linuxstatic -f .\Dockerfile.alpine .`
 
 ### Create a container based on that image
 

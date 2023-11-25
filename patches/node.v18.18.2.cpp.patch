@@ -1,6 +1,6 @@
 --- node/common.gypi
 +++ node/common.gypi
-@@ -174,13 +174,13 @@
+@@ -174,7 +174,7 @@
                'MSVC_runtimeType': 2   # MultiThreadedDLL (/MD)
              }],
              ['llvm_version=="0.0"', {
@@ -43,7 +43,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
-@@ -999,9 +999,9 @@
+@@ -992,9 +992,9 @@
      ],
      'openssl_cflags_linux-aarch64': [
        '-Wa,--noexecstack',
@@ -71,7 +71,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
-@@ -999,9 +999,9 @@
+@@ -992,9 +992,9 @@
      ],
      'openssl_cflags_linux-aarch64': [
        '-Wa,--noexecstack',
@@ -99,7 +99,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
-@@ -976,9 +976,9 @@
+@@ -970,9 +970,9 @@
        'OPENSSL_PIC',
      ],
      'openssl_cflags_linux-aarch64': [
@@ -127,7 +127,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
-@@ -1004,9 +1004,9 @@
+@@ -996,9 +996,9 @@
      ],
      'openssl_cflags_linux-armv4': [
        '-Wa,--noexecstack',
@@ -155,7 +155,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
-@@ -1004,9 +1004,9 @@
+@@ -996,9 +996,9 @@
      ],
      'openssl_cflags_linux-armv4': [
        '-Wa,--noexecstack',
@@ -183,7 +183,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
-@@ -976,9 +976,9 @@
+@@ -970,9 +970,9 @@
        'OPENSSL_PIC',
      ],
      'openssl_cflags_linux-armv4': [
@@ -197,7 +197,7 @@
        '-ldl -pthread -latomic',
 --- node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
-@@ -28,9 +28,9 @@
+@@ -29,9 +29,9 @@
      ],
      'openssl_cflags_linux-elf': [
        '-Wa,--noexecstack',
@@ -211,7 +211,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
-@@ -1013,9 +1013,9 @@
+@@ -1004,9 +1004,9 @@
      ],
      'openssl_cflags_linux-elf': [
        '-Wa,--noexecstack',
@@ -225,7 +225,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
-@@ -28,9 +28,9 @@
+@@ -29,9 +29,9 @@
      ],
      'openssl_cflags_linux-elf': [
        '-Wa,--noexecstack',
@@ -239,7 +239,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
-@@ -1013,9 +1013,9 @@
+@@ -1004,9 +1004,9 @@
      ],
      'openssl_cflags_linux-elf': [
        '-Wa,--noexecstack',
@@ -267,7 +267,7 @@
        '-ldl -pthread',
 --- node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
-@@ -977,9 +977,9 @@
+@@ -971,9 +971,9 @@
        'OPENSSL_PIC',
      ],
      'openssl_cflags_linux-elf': [
@@ -421,7 +421,7 @@
    if (payload_length > max_payload_length) {
 --- node/lib/child_process.js
 +++ node/lib/child_process.js
-@@ -164,7 +164,7 @@ function fork(modulePath, args = [], options) {
+@@ -169,7 +169,7 @@ function fork(modulePath, args = [], options) {
      throw new ERR_CHILD_PROCESS_IPC_REQUIRED('options.stdio');
    }
  
@@ -430,17 +430,22 @@
  }
  
  function _forkChild(fd, serializationMode) {
-index 00000000000..fb2d47f52b6
+index 0000000000..a697294fdf
 --- /dev/null
 +++ node/lib/internal/bootstrap/pkg.js
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,64 @@
 +'use strict';
 +
 +const {
++  prepareWorkerThreadExecution,
 +  prepareMainThreadExecution
 +} = require('internal/process/pre_execution');
 +
-+prepareMainThreadExecution(true);
++if (internalBinding('worker').isMainThread) {
++  prepareMainThreadExecution(true);
++} else {
++  prepareWorkerThreadExecution();
++}
 +
 +(function () {
 +  var __require__ = require;
@@ -493,43 +498,9 @@ index 00000000000..fb2d47f52b6
 +    }
 +  }());
 +}());
---- node/lib/internal/process/pre_execution.js
-+++ node/lib/internal/process/pre_execution.js
-@@ -33,8 +33,13 @@ const {
-   isBuildingSnapshot,
- } = require('v8').startupSnapshot;
-
-+let _alreadyPrepared = false;
-+
- function prepareMainThreadExecution(expandArgv1 = false,
-                                     initialzeModules = true) {
-+  if (_alreadyPrepared === true) return;
-+  _alreadyPrepared = true;
-+
-   refreshRuntimeOptions();
-
-   // TODO(joyeecheung): this is also necessary for workers when they deserialize
-@@ -128,7 +133,8 @@ function patchProcessObject(expandArgv1) {
-   process.argv[0] = process.execPath;
- 
-   if (expandArgv1 && process.argv[1] &&
--      !StringPrototypeStartsWith(process.argv[1], '-')) {
-+      !StringPrototypeStartsWith(process.argv[1], '-') &&
-+      process.argv[1] !== 'PKG_DUMMY_ENTRYPOINT') {
-     // Expand process.argv[1] into a full path.
-     const path = require('path');
-     try {
-@@ -589,6 +595,7 @@ function loadPreloadModules() {
-   // For user code, we preload modules if `-r` is passed
-   const preloadModules = getOptionValue('--require');
-   if (preloadModules && preloadModules.length > 0) {
-+    assert(false, '--require is not supported');
-     const {
-       Module: {
-         _preloadModules
 --- node/lib/internal/modules/cjs/loader.js
 +++ node/lib/internal/modules/cjs/loader.js
-@@ -92,7 +92,7 @@ const fs = require('fs');
+@@ -94,7 +94,7 @@ const fs = require('fs');
  const internalFS = require('internal/fs/utils');
  const path = require('path');
  const { sep } = path;
@@ -538,6 +509,8 @@ index 00000000000..fb2d47f52b6
  const packageJsonReader = require('internal/modules/package_json_reader');
  const { safeGetenv } = internalBinding('credentials');
  const {
+diff --git node/lib/internal/modules/package_json_reader.js node/lib/internal/modules/package_json_reader.js
+index bb175d0df5..07f4834c07 100644
 --- node/lib/internal/modules/package_json_reader.js
 +++ node/lib/internal/modules/package_json_reader.js
 @@ -1,7 +1,7 @@
@@ -548,10 +521,43 @@ index 00000000000..fb2d47f52b6
 +const internalModuleReadJSON = function (f) { return require('fs').internalModuleReadJSON(f); };
  const { pathToFileURL } = require('url');
  const { toNamespacedPath } = require('path');
+
+--- node/lib/internal/process/pre_execution.js
++++ node/lib/internal/process/pre_execution.js
+@@ -36,7 +36,12 @@ const {
+   isBuildingSnapshot,
+ } = require('v8').startupSnapshot;
+
++let _alreadyPrepared = false;
++
+ function prepareMainThreadExecution(expandArgv1 = false, initializeModules = true) {
++  if (_alreadyPrepared === true) return;
++  _alreadyPrepared = true;
++
+   prepareExecution({
+     expandArgv1,
+     initializeModules,
+@@ -155,7 +160,8 @@ function patchProcessObject(expandArgv1) {
+   process.argv[0] = process.execPath;
  
+   if (expandArgv1 && process.argv[1] &&
+-      !StringPrototypeStartsWith(process.argv[1], '-')) {
++      !StringPrototypeStartsWith(process.argv[1], '-') &&
++      process.argv[1] !== 'PKG_DUMMY_ENTRYPOINT') {
+     // Expand process.argv[1] into a full path.
+     const path = require('path');
+     try {
+@@ -603,6 +609,7 @@ function loadPreloadModules() {
+   // For user code, we preload modules if `-r` is passed
+   const preloadModules = getOptionValue('--require');
+   if (preloadModules && preloadModules.length > 0) {
++    assert(false, '--require is not supported');
+     const {
+       Module: {
+         _preloadModules,
 --- node/lib/vm.js
 +++ node/lib/vm.js
-@@ -79,6 +79,7 @@ class Script extends ContextifyScript {
+@@ -77,6 +77,7 @@ class Script extends ContextifyScript {
        produceCachedData = false,
        importModuleDynamically,
        [kParsingContext]: parsingContext,
@@ -559,7 +565,7 @@ index 00000000000..fb2d47f52b6
      } = options;
  
      validateString(filename, 'options.filename');
-@@ -103,7 +104,8 @@ class Script extends ContextifyScript {
+@@ -97,7 +98,8 @@ class Script extends ContextifyScript {
              columnOffset,
              cachedData,
              produceCachedData,
@@ -571,7 +577,7 @@ index 00000000000..fb2d47f52b6
      }
 --- node/src/inspector_agent.cc
 +++ node/src/inspector_agent.cc
-@@ -693,8 +693,6 @@ bool Agent::Start(const std::string& path,
+@@ -703,8 +703,6 @@ bool Agent::Start(const std::string& path,
                                StartIoThreadAsyncCallback));
      uv_unref(reinterpret_cast<uv_handle_t*>(&start_io_thread_async));
      start_io_thread_async.data = this;
@@ -582,7 +588,7 @@ index 00000000000..fb2d47f52b6
        Environment* env = static_cast<Environment*>(data);
 --- node/src/node.cc
 +++ node/src/node.cc
-@@ -458,6 +458,8 @@ MaybeLocal<Value> StartExecution(Environment* env, StartExecutionCallback cb) {
+@@ -314,6 +314,8 @@ MaybeLocal<Value> StartExecution(Environment* env, StartExecutionCallback cb) {
      return env->RunSnapshotDeserializeMain();
    }
  
@@ -591,7 +597,7 @@ index 00000000000..fb2d47f52b6
    if (env->worker_context() != nullptr) {
      return StartExecution(env, "internal/main/worker_thread");
    }
-@@ -628,14 +630,6 @@ static void PlatformInit(ProcessInitializationFlags::Flags flags) {
+@@ -546,14 +548,6 @@ static void PlatformInit(ProcessInitializationFlags::Flags flags) {
    }
  
    if (!(flags & ProcessInitializationFlags::kNoDefaultSignalHandling)) {
@@ -608,7 +614,7 @@ index 00000000000..fb2d47f52b6
  
 --- node/src/node_contextify.cc
 +++ node/src/node_contextify.cc
-@@ -74,6 +74,7 @@ using v8::ScriptOrModule;
+@@ -75,6 +75,7 @@ using v8::ScriptOrigin;
  using v8::String;
  using v8::Uint32;
  using v8::UnboundScript;
@@ -616,7 +622,7 @@ index 00000000000..fb2d47f52b6
  using v8::Value;
  using v8::WeakCallbackInfo;
  using v8::WeakCallbackType;
-@@ -741,11 +742,12 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -787,11 +788,12 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
    Local<ArrayBufferView> cached_data_buf;
    bool produce_cached_data = false;
    Local<Context> parsing_context = context;
@@ -630,7 +636,7 @@ index 00000000000..fb2d47f52b6
      CHECK(args[2]->IsNumber());
      line_offset = args[2].As<Int32>()->Value();
      CHECK(args[3]->IsNumber());
-@@ -764,6 +766,7 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -810,6 +812,7 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
        CHECK_NOT_NULL(sandbox);
        parsing_context = sandbox->context();
      }
@@ -638,7 +644,7 @@ index 00000000000..fb2d47f52b6
    }
  
    ContextifyScript* contextify_script =
-@@ -814,6 +817,10 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+@@ -860,6 +863,10 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
    ShouldNotAbortOnUncaughtScope no_abort_scope(env);
    Context::Scope scope(parsing_context);
  
@@ -646,28 +652,27 @@ index 00000000000..fb2d47f52b6
 +    V8::EnableCompilationForSourcelessUse();
 +  }
 +
-   MaybeLocal<UnboundScript> v8_script = ScriptCompiler::CompileUnboundScript(
-       isolate,
-       &source,
-@@ -828,6 +835,13 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+   MaybeLocal<UnboundScript> maybe_v8_script =
+       ScriptCompiler::CompileUnboundScript(isolate, &source, compile_options);
+ 
+@@ -873,6 +880,13 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
                       "ContextifyScript::New");
      return;
    }
 +
 +  if (sourceless && compile_options == ScriptCompiler::kConsumeCodeCache) {
 +    if (!source.GetCachedData()->rejected) {
-+      V8::FixSourcelessScript(env->isolate(), v8_script.ToLocalChecked());
++      V8::FixSourcelessScript(env->isolate(), v8_script);
 +    }
 +  }
 +
-   contextify_script->script_.Reset(isolate, v8_script.ToLocalChecked());
+   contextify_script->script_.Reset(isolate, v8_script);
  
-   Local<Context> env_context = env->context();
-@@ -854,6 +868,11 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
-         env->cached_data_produced_string(),
-         Boolean::New(isolate, cached_data_produced)).Check();
-   }
-+
+   std::unique_ptr<ScriptCompiler::CachedData> new_cached_data;
+@@ -897,6 +911,10 @@ void ContextifyScript::New(const FunctionCallbackInfo<Value>& args) {
+           .IsNothing())
+     return;
+ 
 +  if (sourceless && produce_cached_data) {
 +    V8::DisableCompilationForSourcelessUse();
 +  }
@@ -785,10 +790,11 @@ index 00000000000..fb2d47f52b6
 +}
 --- node/src/node_options.cc
 +++ node/src/node_options.cc
-@@ -299,6 +299,7 @@ void Parse(
- // TODO(addaleax): Make that unnecessary.
- 
- DebugOptionsParser::DebugOptionsParser() {
+@@ -307,7 +307,7 @@ DebugOptionsParser::DebugOptionsParser() {
+ #ifndef DISABLE_SINGLE_EXECUTABLE_APPLICATION
+   if (sea::IsSingleExecutable()) return;
+ #endif
+-
 +  return;
    AddOption("--inspect-port",
              "set host:port for inspector",
@@ -834,13 +840,14 @@ index 00000000000..fb2d47f52b6
              ],
 --- node/configure.py
 +++ node/configure.py
-@@ -1245,9 +1245,6 @@ def configure_node(o):
+@@ -1289,10 +1289,8 @@ def configure_node(o):
 
    o['variables']['want_separate_host_toolset'] = int(cross_compiling)
 
 -  # Enable branch protection for arm64
--  if target_arch == 'arm64':
+   if target_arch == 'arm64':
 -    o['cflags']+=['-msign-return-address=all']
+     o['variables']['arm_fpu'] = options.arm_fpu or 'neon'
 
    if options.node_snapshot_main is not None:
      if options.shared:
