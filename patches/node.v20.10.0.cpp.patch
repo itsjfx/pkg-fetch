@@ -1,6 +1,8 @@
+diff --git node/common.gypi node/common.gypi
+index 4589f51517..759b61d740 100644
 --- node/common.gypi
 +++ node/common.gypi
-@@ -174,7 +174,7 @@
+@@ -174,13 +174,13 @@
                'MSVC_runtimeType': 2   # MultiThreadedDLL (/MD)
              }],
              ['llvm_version=="0.0"', {
@@ -16,6 +18,20 @@
          'conditions': [
            ['enable_lto=="true"', {
              'cflags': ['<(lto)'],
+diff --git node/configure.py node/configure.py
+index 62f041ce52..4688ec0fdd 100755
+--- node/configure.py
++++ node/configure.py
+@@ -1270,7 +1270,6 @@ def configure_node(o):
+ 
+   # Enable branch protection for arm64
+   if target_arch == 'arm64':
+-    o['cflags']+=['-msign-return-address=all']
+     o['variables']['arm_fpu'] = options.arm_fpu or 'neon'
+ 
+   if options.node_snapshot_main is not None:
+diff --git node/deps/llhttp/common.gypi node/deps/llhttp/common.gypi
+index ef7549f809..0bf64bafae 100644
 --- node/deps/llhttp/common.gypi
 +++ node/deps/llhttp/common.gypi
 @@ -15,7 +15,7 @@
@@ -27,6 +43,8 @@
          'msvs_settings': {
            'VCCLCompilerTool': {
              'RuntimeLibrary': 0, # static release
+diff --git node/deps/openssl/config/archs/linux-aarch64/asm/openssl-cl.gypi node/deps/openssl/config/archs/linux-aarch64/asm/openssl-cl.gypi
+index 5a6d4b8257..1abb3f2487 100644
 --- node/deps/openssl/config/archs/linux-aarch64/asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm/openssl-cl.gypi
 @@ -17,9 +17,9 @@
@@ -41,6 +59,8 @@
      ],
      'openssl_ex_libs_linux-aarch64': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
+index 5990887c02..6ad40b4630 100644
 --- node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm/openssl.gypi
 @@ -992,9 +992,9 @@
@@ -55,6 +75,8 @@
      ],
      'openssl_ex_libs_linux-aarch64': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl-cl.gypi node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl-cl.gypi
+index 3baf434816..20ac41b1b1 100644
 --- node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl-cl.gypi
 @@ -17,9 +17,9 @@
@@ -69,6 +91,8 @@
      ],
      'openssl_ex_libs_linux-aarch64': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
+index c7cb2091b5..968d5084cb 100644
 --- node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/asm_avx2/openssl.gypi
 @@ -992,9 +992,9 @@
@@ -83,6 +107,8 @@
      ],
      'openssl_ex_libs_linux-aarch64': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl-cl.gypi node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl-cl.gypi
+index b1b8cb0ae8..4eaf8916e4 100644
 --- node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl-cl.gypi
 @@ -7,9 +7,9 @@
@@ -97,6 +123,8 @@
      ],
      'openssl_ex_libs_linux-aarch64': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
+index f20a2ba245..156b8b9c16 100644
 --- node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-aarch64/no-asm/openssl.gypi
 @@ -970,9 +970,9 @@
@@ -111,6 +139,8 @@
      ],
      'openssl_ex_libs_linux-aarch64': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-armv4/asm/openssl-cl.gypi node/deps/openssl/config/archs/linux-armv4/asm/openssl-cl.gypi
+index 0b29d69ac5..f6b3504c3f 100644
 --- node/deps/openssl/config/archs/linux-armv4/asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm/openssl-cl.gypi
 @@ -20,9 +20,9 @@
@@ -125,6 +155,8 @@
      ],
      'openssl_ex_libs_linux-armv4': [
        '-ldl -pthread -latomic',
+diff --git node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
+index 8fd7c43c4d..2719739f5e 100644
 --- node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm/openssl.gypi
 @@ -996,9 +996,9 @@
@@ -139,6 +171,8 @@
      ],
      'openssl_ex_libs_linux-armv4': [
        '-ldl -pthread -latomic',
+diff --git node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl-cl.gypi node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl-cl.gypi
+index 34e8366d42..7c9101b993 100644
 --- node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl-cl.gypi
 @@ -20,9 +20,9 @@
@@ -153,6 +187,8 @@
      ],
      'openssl_ex_libs_linux-armv4': [
        '-ldl -pthread -latomic',
+diff --git node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
+index 9b59414541..1c96edfd78 100644
 --- node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/asm_avx2/openssl.gypi
 @@ -996,9 +996,9 @@
@@ -167,6 +203,8 @@
      ],
      'openssl_ex_libs_linux-armv4': [
        '-ldl -pthread -latomic',
+diff --git node/deps/openssl/config/archs/linux-armv4/no-asm/openssl-cl.gypi node/deps/openssl/config/archs/linux-armv4/no-asm/openssl-cl.gypi
+index b683cb33db..b7382d2326 100644
 --- node/deps/openssl/config/archs/linux-armv4/no-asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/no-asm/openssl-cl.gypi
 @@ -7,9 +7,9 @@
@@ -181,6 +219,8 @@
      ],
      'openssl_ex_libs_linux-armv4': [
        '-ldl -pthread -latomic',
+diff --git node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
+index cc4efdf7d5..75a4a3f278 100644
 --- node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-armv4/no-asm/openssl.gypi
 @@ -970,9 +970,9 @@
@@ -195,6 +235,8 @@
      ],
      'openssl_ex_libs_linux-armv4': [
        '-ldl -pthread -latomic',
+diff --git node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
+index 8f021d5c21..9458e9ddcf 100644
 --- node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm/openssl-cl.gypi
 @@ -29,9 +29,9 @@
@@ -209,6 +251,8 @@
      ],
      'openssl_ex_libs_linux-elf': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
+index 0cf7d926c4..493d587c6f 100644
 --- node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm/openssl.gypi
 @@ -1004,9 +1004,9 @@
@@ -223,6 +267,8 @@
      ],
      'openssl_ex_libs_linux-elf': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
+index 4e2c60206e..f98708b8f9 100644
 --- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl-cl.gypi
 @@ -29,9 +29,9 @@
@@ -237,6 +283,8 @@
      ],
      'openssl_ex_libs_linux-elf': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
+index 4ca065ef16..e66085590c 100644
 --- node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/asm_avx2/openssl.gypi
 @@ -1004,9 +1004,9 @@
@@ -251,6 +299,8 @@
      ],
      'openssl_ex_libs_linux-elf': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-elf/no-asm/openssl-cl.gypi node/deps/openssl/config/archs/linux-elf/no-asm/openssl-cl.gypi
+index b3c9034bbf..b1a7e94d02 100644
 --- node/deps/openssl/config/archs/linux-elf/no-asm/openssl-cl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/no-asm/openssl-cl.gypi
 @@ -8,9 +8,9 @@
@@ -265,6 +315,8 @@
      ],
      'openssl_ex_libs_linux-elf': [
        '-ldl -pthread',
+diff --git node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
+index 3b06ffbeef..747fbbc2eb 100644
 --- node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
 +++ node/deps/openssl/config/archs/linux-elf/no-asm/openssl.gypi
 @@ -971,9 +971,9 @@
@@ -279,6 +331,8 @@
      ],
      'openssl_ex_libs_linux-elf': [
        '-ldl -pthread',
+diff --git node/deps/uv/common.gypi node/deps/uv/common.gypi
+index cc9c98e762..04487b8463 100644
 --- node/deps/uv/common.gypi
 +++ node/deps/uv/common.gypi
 @@ -46,7 +46,7 @@
@@ -290,18 +344,6 @@
          ],
          'msvs_settings': {
            'VCCLCompilerTool': {
-diff --git node/configure.py node/configure.py
-index 62f041ce52..4688ec0fdd 100755
---- node/configure.py
-+++ node/configure.py
-@@ -1270,7 +1270,6 @@ def configure_node(o):
- 
-   # Enable branch protection for arm64
-   if target_arch == 'arm64':
--    o['cflags']+=['-msign-return-address=all']
-     o['variables']['arm_fpu'] = options.arm_fpu or 'neon'
- 
-   if options.node_snapshot_main is not None:
 diff --git node/deps/v8/include/v8-initialization.h node/deps/v8/include/v8-initialization.h
 index d3e35d6ec5..6e9bbe3849 100644
 --- node/deps/v8/include/v8-initialization.h
@@ -350,6 +392,20 @@ index a91dfc271c..a4cd4eeb31 100644
  RegisteredExtension* RegisteredExtension::first_extension_ = nullptr;
  
  RegisteredExtension::RegisteredExtension(std::unique_ptr<Extension> extension)
+diff --git node/deps/v8/src/base/platform/platform-posix.cc node/deps/v8/src/base/platform/platform-posix.cc
+index 4b6e6ad8f1..c2e2a43598 100644
+--- node/deps/v8/src/base/platform/platform-posix.cc
++++ node/deps/v8/src/base/platform/platform-posix.cc
+@@ -568,6 +568,9 @@ bool OS::DiscardSystemPages(void* address, size_t size) {
+     ret = madvise(reinterpret_cast<caddr_t>(address), size, MADV_DONTNEED);
+   }
+ #else
++  if (ret != 0 && errno == ENOSYS) {
++    return true;  // madvise is not available on all systems.
++  }
+   int ret = madvise(address, size, MADV_DONTNEED);
+ #endif
+   // madvise with MADV_DONTNEED only fails on illegal parameters. That's a bug
 diff --git node/deps/v8/src/codegen/compiler.cc node/deps/v8/src/codegen/compiler.cc
 index 31c5acceeb..56cad8671f 100644
 --- node/deps/v8/src/codegen/compiler.cc
@@ -457,7 +513,7 @@ index 449013906e..3a85e4a541 100644
  function _forkChild(fd, serializationMode) {
 diff --git node/lib/internal/bootstrap/pkg.js node/lib/internal/bootstrap/pkg.js
 new file mode 100644
-index 0000000000..a697294fdf
+index 0000000000..50deb0b3cd
 --- /dev/null
 +++ node/lib/internal/bootstrap/pkg.js
 @@ -0,0 +1,64 @@
